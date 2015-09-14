@@ -1,0 +1,2 @@
+Prototype.js look up
+==============
