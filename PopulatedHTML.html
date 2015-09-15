@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <script type="text/javascript" src="//localhost/prototype/prototype.js"></script>
+    <script type="text/javascript">
+      var validado = false;
+      var lastFirstPrice = 0;
+      var lastSecondPrice= 0;
+      var lastDrinksPrice = 0;
+      function vesto(){
+        var checked_fields = true;
+        if(document.getElementById("mail").value==""&&document.getElementById("tlf").value==""){
+          alert("Se debe especificar un email o telefono");
+          checked_fields=false;
+        }
+        var checked_first = true;
+        var checked_seconds = true;
+        var checked_drinks = true;
+        var firsts = document.getElementsByName("first");
+        var seconds = document.getElementsByName("second");
+        var drinks = document.getElementsByName("drinks");
+        for(i in firsts)
+          checked_first = checked_first && !firsts[i].checked;
+        if(checked_first)
+          alert("Se debe seleccionar un primer plato");
+        for(i in seconds)
+          checked_seconds = checked_seconds && !seconds[i].checked;
+        if(checked_seconds)
+          alert("Se debe seleccionar un segundo plato");
+        for(i in drinks)
+          checked_drinks = checked_drinks && !drinks[i].checked;
+        if(checked_drinks)
+          alert("Se debe seleccionar una bebida");
+        if(!checked_drinks&&!checked_seconds&&!checked_first&&checked_fields){
+          alert("Todo correcto");
+          return true;
+        }
+        else
+          return false; 
+        return true;
+      }
+      function loaded(){
+        //Eventos de los ingredientes extra
+        var ing = document.getElementsByName('extra');
+        for (var i=0;i<ing.length;i++){
+          ing[i].addEventListener( 'click', function(){
+            ing = document.getElementsByName('extra');
+            var c=0;
+            for(i in ing)
+              if(ing[i].checked==true)c++;
+            if(c>3){
+              this.checked=false;
+              alert("Maximo tres ingredientes");
+            }
+          });
+        }
+        //Eventos de los precios
+        document.getElementById("price").value = 0;
+        document.getElementById("finalprice").value = 0;
+        var ing = document.getElementsByName('first');
+        for (var i=0;i<ing.length;i++){
+          ing[i].addEventListener( 'click', function(){
+            precio = document.getElementById("price")
+            precio.value = parseInt(precio.value)-lastFirstPrice;
+            precio.value = parseInt(precio.value)+parseInt(this.value);
+            if(validado)
+             document.getElementById("finalprice").value = precio.value *0.75;
+            else
+             document.getElementById("finalprice").value = precio.value;
+            lastFirstPrice = parseInt(this.value);
+          });
+        }
+        var ing = document.getElementsByName('second');
+        for (var i=0;i<ing.length;i++){
+          ing[i].addEventListener( 'click', function(){
+            precio = document.getElementById("price")
+            precio.value = parseInt(precio.value)-lastSecondPrice;
+            precio.value = parseInt(precio.value)+parseInt(this.value);
+            if(validado)
+             document.getElementById("finalprice").value = precio.value *0.75;
+            else
+             document.getElementById("finalprice").value = precio.value;
+            lastSecondPrice = parseInt(this.value);
+          });
+        }
+        var ing = document.getElementsByName('drinks');
+        for (var i=0;i<ing.length;i++){
+          ing[i].addEventListener( 'click', function(){
+            precio = document.getElementById("price")
+            precio.value = parseInt(precio.value)-lastDrinksPrice;
+            precio.value = parseInt(precio.value)+parseInt(this.value);
+            if(validado) 
+              document.getElementById("finalprice").value = precio.value *0.75;
+            else
+             document.getElementById("finalprice").value = precio.value;
+            lastDrinksPrice = parseInt(this.value);
+          });
+        }
+      }
+      function validarDescuento(){
+        var field = document.getElementById("discount");
+        var pattern = /[A-Z]{2}[0-9]{3}/i;
+        if(pattern.test(field.value)){
+          var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+          var letters = field.value.split('');
+          var sum = 0;
+          sum += (alphabet.indexOf(letters[0])+1)*10;
+          sum += (alphabet.indexOf(letters[1])+1)*10;
+          for(var i = 2; i<5;i++){
+            sum+= parseInt(letters[i]);
+          }
+          if(sum==101){
+            validado = true;
+            document.getElementById("finalprice").value = document.getElementById("price").value*0.75;
+          }
+          else{
+            validado = false;
+            document.getElementById("finalprice").value = document.getElementById("price").value;
+            alert("El codigo de descuento no es valido");
+          }
+        }
+      }
+      
+    </script>
+    <style>
+      #content {
+        width: 80%;
+        text-align:center;
+        margin-left:auto;
+        margin-right:auto;
+      }
+      input{
+        text-align:right;
+      }
+      table{
+        text-align:left;
+        width:100%;
+      }
+      span{
+        padding: 3px;
+      }
+      p{
+        height:22px;
+      }
+      .input{
+        border-right: solid #000000;
+      }
+      .elements input{
+        float:right;
+      }
+        
+    </style>
+  </head>
+  <body onload="loaded()">
+    <div id="content">
+      <form name="pid" onsubmit="return vesto()">
+        <table>
+          <tr>
+            <td class="label">
+              <p>Datos personales:</p>
+              <p> <span>Nombre:  </span></p>
+              <p> <span>Apellidos:  </span></p>
+              <p> <span>DNI:  </span></p>
+              <p> <span>Direccion:  </span></p>
+              <p> <span>Codigo postal:  </span></p>
+              <p> <span>Email:  </span></p>
+              <p> <span>Telefono:  </span></p>
+            </td>
+            <td class="input">
+              <p> </p>
+              <p>
+                <input type="text" title="Escriba el nombre" id="nombre" required="required">
+              </p>
+              <p> 
+                <input type="text" title="Escriba los apellidos" id="apellidos" required="required">
+              </p>
+              <p> 
+                <input type="text" title="Escriba el NIF sin guiones ni separaciones y la letra en mayuscula" id="nif" required="required" pattern="[0-9]{8}[A-Z]{1}">
+              </p>
+              <p> 
+                <input type="text" title="Escriba la direccion" id="direccion" required="required">
+              </p>
+              <p> 
+                <input type="text" pattern="[0-9]{5}" title="Escriba un codigo postal de cinco digitos" id="cp" required="required">
+              </p>
+              <p>              
+                <input type="email" id="mail" title="Escriba una direccion de email">
+              </p>
+              <p> 
+                <input type="text" pattern="[0-9]{5}" id="tlf" title="Escriba un telefono de cinco digitos">
+              </p>
+            </td>
+            <td>
+              <p title="Escoja un primer plato">Primeros platos:</p>
+              <p title="Escoja un primer plato">
+                <input type="radio" name="first" value="10">Plato A
+                <input type="radio" name="first" value="11">Plato B
+                <input type="radio" name="first" value="12">Plato C
+              </p>
+              <p title="Escoja un segundo plato">Segundos platos:</p>
+              <p title="Escoja un segundo plato">
+                <input type="radio" name="second" value="15">Plato Z
+                <input type="radio" name="second" value="16">Plato X
+                <input type="radio" name="second" value="17">Plato V
+                <input type="radio" name="second" value="18">Plato W
+              </p>
+              <p title="Escoja un maximo de tres ingredientes">Ing. extra:</p>
+              <p title="Escoja un maximo de tres ingredientes">
+                <input type="checkbox" name="extra" value="n">N
+                <input type="checkbox" name="extra" value="m">M
+                <input type="checkbox" name="extra" value="o">O
+                <input type="checkbox" name="extra" value="p">P
+                <input type="checkbox" name="extra" value="q">Q
+              </p>
+              <p title="Escoja una bebida">Bebidas:</p>
+              <p title="Escoja una bebida">
+                <input type="radio" name="drinks" value="1">B1
+                <input type="radio" name="drinks" value="2">B2
+                <input type="radio" name="drinks" value="3">B3
+                <input type="radio" name="drinks" value="4">B4
+                <input type="radio" name="drinks" value="5">B5
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td class="elements">
+              <p><span>Precio: </span>
+                <input type="text" id="price" readonly>
+              </p>
+              <p>Introducir descuento: 
+                <input type="text" id="discount" pattern="[A-Z]{2}[0-9]{3}">
+                <input type="button" id="validar" onclick="validarDescuento()" value="Validar">
+              </p>
+              <p>Precio final: 
+                <input type="text" id="finalprice" readonly>
+              </p>
+              <p>
+                <input type="submit" name="submit" value="Enviar">
+              </p>
+            </td>
+          </tr>
+        </table>
+        <table>
+          <tr>
+            <td>Producto: </td>
+            <td>Plato A</td>
+            <td>Plato B</td>
+            <td>Plato C</td>
+            <td>Plato Z</td>
+            <td>Plato X</td>
+            <td>Plato V</td>
+            <td>Plato W</td>
+            <td>B1</td>
+            <td>B2</td>
+            <td>B3</td>
+            <td>B4</td>
+            <td>B5</td>
+          </tr>
+          <tr>
+            <td>Precio: </td>
+            <td>10</td>
+            <td>11</td>
+            <td>12</td>
+            <td>15</td>
+            <td>16</td>
+            <td>17</td>
+            <td>18</td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>5</td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </body>
+</html>
